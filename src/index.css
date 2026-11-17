@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy-950: #070F1E;
+  --color-navy-900: #0B192C;
+  --color-navy-850: #12233C;
+  --color-navy-800: #1E3E62;
+  --color-navy-700: #254D7B;
+  --color-navy-600: #32629A;
+
+  --color-fed-teal: #0D9488;
+  --color-fed-teal-hover: #0F766E;
+  --color-fed-teal-light: #CCFBF1;
+  --color-fed-cyan: #06B6D4;
+  
+  --color-fed-slate: #1E293B;
+  --color-fed-canvas: #F8FAFC;
+  --color-fed-surface: #FFFFFF;
+  --color-fed-card: #FFFFFF;
+  --color-fed-border: #E2E8F0;
+  --color-fed-border-dark: #334155;
+  --color-fed-muted: #64748B;
+  
+  --color-status-critical: #DC2626;
+  --color-status-critical-bg: #FEF2F2;
+  --color-status-warning: #D97706;
+  --color-status-warning-bg: #FFFBEB;
+  --color-status-nominal: #059669;
+  --color-status-nominal-bg: #ECFDF5;
+  --color-status-info: #2563EB;
+  --color-status-info-bg: #EFF6FF;
+
+  --color-cui: #6D28D9;
+  --color-secret: #B91C1C;
+  --color-unclass: #15803D;
+  --color-topsecret: #D97706;
+}
+
+/* Final Typography Baseline: Plus Jakarta Sans with JetBrains Mono Telemetry */
+:root,
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.015em;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light;
+  background-color: #F8FAFC;
+  color: #0F172A;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbars for high-density enterprise data */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+.dark-scroll::-webkit-scrollbar-track {
+  background: #0B192C;
+}
+.dark-scroll::-webkit-scrollbar-thumb {
+  background: #1E3E62;
+  border-radius: 3px;
+}
+.dark-scroll::-webkit-scrollbar-thumb:hover {
+  background: #254D7B;
+}
+
+/* Monospace font classes for technical telemetry, hashes, call signs */
+.font-telemetry, code, pre, .font-mono {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-variant-numeric: tabular-nums;
+}
