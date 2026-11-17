@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppShell } from './components/layout/AppShell'
+import { LoginPage } from './pages/auth/LoginPage'
 import { ExecutiveDashboardPage } from './pages/command/ExecutiveDashboardPage'
 import { COPMapPage } from './pages/command/COPMapPage'
 import { IncidentManagementPage } from './pages/command/IncidentManagementPage'
@@ -27,12 +28,33 @@ import CriticalConnectPage from './pages/apps/CriticalConnectPage'
 import { MissionAppPage } from './pages/apps/MissionAppPage'
 import { SharedServicePage } from './pages/services/SharedServicePage'
 import { AdminPage } from './pages/admin/AdminPage'
+import { useVanguardStore } from './store/useVanguardStore'
+
+// Auth Guard: redirects unauthenticated requests to /login
+const ProtectedAppShell: React.FC = () => {
+  const { isAuthenticated } = useVanguardStore()
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+
+  return <AppShell />
+}
 
 export const App: React.FC = () => {
+  const { isAuthenticated } = useVanguardStore()
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AppShell />}>
+        {/* Public Login Route */}
+        <Route
+          path="/login"
+          element={isAuthenticated ? <Navigate to="/command/executive" replace /> : <LoginPage />}
+        />
+
+        {/* Authenticated Root & Application Routes */}
+        <Route element={<ProtectedAppShell />}>
           {/* Default Landing: Executive Mission Dashboard */}
           <Route index element={<ExecutiveDashboardPage />} />
 

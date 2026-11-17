@@ -9,6 +9,7 @@ import {
   UserCheck,
   RotateCcw,
   CheckCircle2,
+  LogOut,
 } from 'lucide-react'
 import { useVanguardStore } from '../../store/useVanguardStore'
 import { Drawer } from '../ui/Drawer'
@@ -30,6 +31,7 @@ export const Header: React.FC = () => {
     setOmniSearchQuery,
     acknowledgeAlert,
     resetToFactoryDefaults,
+    logout,
   } = useVanguardStore()
 
   const [notificationDrawerOpen, setNotificationDrawerOpen] = useState(false)
@@ -249,7 +251,17 @@ export const Header: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="border-t border-slate-800 pt-2.5 mt-3">
+                <div className="border-t border-slate-800 pt-2.5 mt-3 space-y-1">
+                  <button
+                    onClick={() => {
+                      logout()
+                      setProfileDropdownOpen(false)
+                    }}
+                    className="w-full text-left px-2.5 py-1.5 text-amber-400 hover:bg-amber-950/40 rounded flex items-center gap-2 cursor-pointer transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Sign Out / Disconnect PIV</span>
+                  </button>
                   <button
                     onClick={() => {
                       resetToFactoryDefaults()

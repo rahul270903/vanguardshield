@@ -160,6 +160,7 @@ interface VanguardStoreState {
   activeFont: FontFamilyOption
   sidebarCollapsed: boolean
   omniSearchQuery: string
+  isAuthenticated: boolean
 
   // Domain Datasets
   agencies: AgencyTenant[]
@@ -256,6 +257,8 @@ interface VanguardStoreState {
   setFont: (font: FontFamilyOption) => void
   toggleSidebar: () => void
   setOmniSearchQuery: (query: string) => void
+  login: (personaId?: string, agencyId?: string) => void
+  logout: () => void
 
   // Operational Actions
   acknowledgeAlert: (alertId: string) => void
@@ -386,6 +389,7 @@ export const useVanguardStore = create<VanguardStoreState>()(
       activeFont: 'plus-jakarta',
       sidebarCollapsed: false,
       omniSearchQuery: '',
+      isAuthenticated: false,
 
       agencies: SEED_AGENCIES,
       personas: SEED_PERSONAS,
@@ -517,6 +521,62 @@ export const useVanguardStore = create<VanguardStoreState>()(
       toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
 
       setOmniSearchQuery: (query) => set({ omniSearchQuery: query }),
+
+      login: (personaId?: string, agencyId?: string) => {
+        const state = get()
+        const selectedPersona = personaId
+          ? state.personas.find((p) => p.id === personaId) || state.personas[0]
+          : state.personas.find((p) => p.id === state.activePersonaId) || state.personas[0]
+        const targetAgencyId = agencyId || selectedPersona.agencyId || state.activeAgencyId
+        const targetAgency = state.agencies.find((a) => a.id === targetAgencyId) || state.agencies[0]
+
+        set({
+          isAuthenticated: true,
+          activePersonaId: selectedPersona.id,
+          activeAgencyId: targetAgency.id,
+          classificationLevel: selectedPersona.clearanceLevel || targetAgency.defaultClassification,
+        })
+
+        get().logAuditEvent({
+          agencyId: targetAgency.id,
+          actor: selectedPersona.name,
+          actorRole: selectedPersona.roleLabel,
+          action: 'USER_AUTHENTICATED',
+          targetEntity: 'Authentication',
+          targetId: selectedPersona.pivCardId,
+          outcome: 'SUCCESS',
+          purpose: `FIPS 201 Mutual Smartcard PIV authentication successful for ${selectedPersona.name}. Session established.`,
+        })
+
+        get().addToast({
+          title: 'Authentication Successful',
+          message: `Welcome, ${selectedPersona.name} (${selectedPersona.roleLabel}). Session secured.`,
+          type: 'success',
+        })
+      },
+
+      logout: () => {
+        const state = get()
+        const activePersona = state.personas.find((p) => p.id === state.activePersonaId)
+        if (activePersona) {
+          get().logAuditEvent({
+            agencyId: state.activeAgencyId,
+            actor: activePersona.name,
+            actorRole: activePersona.roleLabel,
+            action: 'USER_LOGOUT',
+            targetEntity: 'Authentication',
+            targetId: activePersona.pivCardId,
+            outcome: 'SUCCESS',
+            purpose: `Operator initiated session termination for ${activePersona.name}. Tokens revoked.`,
+          })
+        }
+        set({ isAuthenticated: false })
+        get().addToast({
+          title: 'Session Terminated',
+          message: 'Secure session closed. Re-authentication required.',
+          type: 'info',
+        })
+      },
 
       acknowledgeAlert: (alertId) => {
         const state = get()
