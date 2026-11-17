@@ -48,6 +48,7 @@ import {
   SEED_OPERATOR_SESSIONS,
   SEED_CALL_RECORDINGS,
 } from '../../store/seedData'
+import { tacticalAudio } from '../../utils/audioSimulator'
 
 export const NG911Page: React.FC = () => {
   const store = useVanguardStore()
@@ -131,6 +132,34 @@ export const NG911Page: React.FC = () => {
     const mins = Math.floor(totalSeconds / 60)
     const secs = totalSeconds % 60
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+
+  // Audio playback controller with real audio synthesis
+  useEffect(() => {
+    let progressInterval: NodeJS.Timeout | null = null
+    if (isPlayingAudio) {
+      tacticalAudio.startPlayback()
+      progressInterval = setInterval(() => {
+        setPlaybackProgress((prev) => {
+          if (prev >= 100) {
+            tacticalAudio.stopPlayback()
+            setIsPlayingAudio(false)
+            return 0
+          }
+          return prev + 1.5
+        })
+      }, 500)
+    } else {
+      tacticalAudio.stopPlayback()
+    }
+    return () => {
+      if (progressInterval) clearInterval(progressInterval)
+      tacticalAudio.stopPlayback()
+    }
+  }, [isPlayingAudio])
+
+  const toggleAudioPlayback = () => {
+    setIsPlayingAudio((prev) => !prev)
   }
 
   const handleSaveNotes = () => {
@@ -1022,7 +1051,7 @@ export const NG911Page: React.FC = () => {
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+                        onClick={toggleAudioPlayback}
                         className="bg-blue-600 hover:bg-blue-700 text-white border-none px-4"
                       >
                         {isPlayingAudio ? (

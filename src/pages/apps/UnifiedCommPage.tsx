@@ -58,6 +58,7 @@ import {
   CrossDomainBridgeRequest,
 } from '../../types/modules'
 import { ClassificationLevel } from '../../types/common'
+import { tacticalAudio } from '../../utils/audioSimulator'
 
 type CommTabType =
   | 'dashboard'
@@ -226,13 +227,15 @@ export default function UnifiedCommPage() {
     setIsNewGroupModalOpen(false)
   }
 
-  // PTT Trigger
+  // PTT Trigger with tactical radio audio synthesizer
   const handlePttMouseDown = () => {
     setIsTransmitting(true)
+    tacticalAudio.playPttChirp('grant')
   }
 
   const handlePttMouseUp = () => {
     setIsTransmitting(false)
+    tacticalAudio.playPttChirp('release')
   }
 
   return (
